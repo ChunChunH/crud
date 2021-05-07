@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -17,16 +18,10 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { AddProductButton } from './AddProductButton';
-import EditIcon from '@material-ui/icons/Edit';
+import {EditProduct} from "./EditProduct"
+import { deleteProduct, initialStateStorage } from '../redux/functions';
+import { Grid } from '@material-ui/core';
 
-function createData(name, quantity, category, price) {
-    return { name, quantity, category, price };
-  }
-  
-  const rows = [
-    createData('Cupcake', 305, "MyCategory", 67),
-  ];
-  
   function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
       return -1;
@@ -57,7 +52,8 @@ function createData(name, quantity, category, price) {
     { id: 'name', numeric: false, disablePadding: true, label: 'Product' },
     { id: 'quantity', numeric: true, disablePadding: false, label: 'Quantity' },
     { id: 'category', numeric: true, disablePadding: false, label: 'Category' },
-    { id: 'price', numeric: true, disablePadding: false, label: 'Price' },
+    { id: 'price', numeric: true, disablePadding: false, label: 'Unit Price' },
+    { id: 'actions', numeric: true, disablePadding: false, label: 'Actions' },
   ];
   
   function EnhancedTableHead(props) {
@@ -65,18 +61,11 @@ function createData(name, quantity, category, price) {
     const createSortHandler = (property) => (event) => {
       onRequestSort(event, property);
     };
+
   
     return (
       <TableHead>
         <TableRow>
-          <TableCell padding="checkbox">
-            <Checkbox
-              indeterminate={numSelected > 0 && numSelected < rowCount}
-              checked={rowCount > 0 && numSelected === rowCount}
-              onChange={onSelectAllClick}
-              inputProps={{ 'aria-label': 'select all desserts' }}
-            />
-          </TableCell>
           {headCells.map((headCell) => (
             <TableCell
               key={headCell.id}
@@ -129,64 +118,17 @@ function createData(name, quantity, category, price) {
             backgroundColor: theme.palette.secondary.dark,
           },
     title: {
-      flex: '1 1 90%',
+      flex: '1 1 80%',
     },
   }));
-  
-  const EnhancedTableToolbar = (props) => {
-    const classes = useToolbarStyles();
-    const { numSelected } = props;
-  
-    return (
-      <Toolbar
-        className={clsx(classes.root, {
-          [classes.highlight]: numSelected > 0,
-        })}
-      >
-        {numSelected > 0 ? (
-          <Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
-            {numSelected} selected
-          </Typography>
-        ) : (
-          <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-            Product Listing
-          </Typography>
-        )}
-  
-        {numSelected > 0 ? (
-          <div>
-            <Tooltip title="Edit" >
-              <IconButton aria-label="edit" className="d-inline">
-                <EditIcon />
-              </IconButton>
-            </Tooltip>
-            
-            <Tooltip title="Delete">
-              <IconButton aria-label="delete" className="d-inline">
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
-          </div>
-          
-          
-        ) : (
-            <IconButton>
-              <AddProductButton/>
-            </IconButton>
-        )}
-      </Toolbar>
-    );
-  };
-  
-  EnhancedTableToolbar.propTypes = {
-    numSelected: PropTypes.number.isRequired,
-  };
   
   const useStyles = makeStyles((theme) => ({
     root: {
       width: '100%',
     },
     paper: {
+      paddingLeft: '1em',
+      paddingRight: '1em',
       width: '100%',
       marginBottom: theme.spacing(2),
     },
@@ -203,8 +145,8 @@ function createData(name, quantity, category, price) {
       position: 'absolute',
       top: 20,
       width: 1,
-    },
-  }));
+    }
+  }))
   
   export default function EnhancedTable() {
     const classes = useStyles();
@@ -214,7 +156,47 @@ function createData(name, quantity, category, price) {
     const [page] = React.useState(0);
     const [dense] = React.useState(false);
     const [rowsPerPage] = React.useState(5);
-  
+    const dispatch = useDispatch();
+
+    const rows = useSelector(state => state.products)
+    const classes2 = useToolbarStyles()
+
+    const EnhancedTableToolbar = (props) => {
+    const { numSelected } = props;
+
+    const [dataStorage, setDataStorage] = useState(JSON.parse(localStorage.getItem('products')))
+
+    
+        return (
+    
+          <Toolbar
+                          className={clsx(classes2.root, {
+                            [classes2.highlight]: numSelected > 0,
+                          })}
+                        >
+                          {numSelected > 0 ? (
+                            <Typography className={classes2.title} color="inherit" variant="subtitle1" component="div">
+                              {numSelected} selected
+                            </Typography>
+                          ) : (
+                            <Typography className={classes2.title} variant="h6" id="tableTitle" component="div">
+                              Product Listing
+                            </Typography>
+                          )}
+                    
+                              <IconButton>
+                                <AddProductButton/>
+                              </IconButton>
+                        </Toolbar>
+          
+          
+        );
+      };
+      
+      EnhancedTableToolbar.propTypes = {
+        numSelected: PropTypes.number.isRequired,
+      };
+
     const handleRequestSort = (event, property) => {
       const isAsc = orderBy === property && order === 'asc';
       setOrder(isAsc ? 'desc' : 'asc');
@@ -258,7 +240,7 @@ function createData(name, quantity, category, price) {
     return (
       <div className={classes.root}>
         <Paper className={classes.paper}>
-          <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar numSelected={selected.length} />
           <TableContainer>
             <Table
               className={classes.table}
@@ -266,6 +248,7 @@ function createData(name, quantity, category, price) {
               size={dense ? 'small' : 'medium'}
               aria-label="enhanced table"
             >
+
               <EnhancedTableHead
                 classes={classes}
                 numSelected={selected.length}
@@ -275,36 +258,42 @@ function createData(name, quantity, category, price) {
                 onRequestSort={handleRequestSort}
                 rowCount={rows.length}
               />
+
               <TableBody>
                 {stableSort(rows, getComparator(order, orderBy))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
                     const isItemSelected = isSelected(row.name);
                     const labelId = `enhanced-table-checkbox-${index}`;
-  
+                  
                     return (
-                      <TableRow
-                        hover
-                        onClick={(event) => handleClick(event, row.name)}
-                        role="checkbox"
-                        aria-checked={isItemSelected}
-                        tabIndex={-1}
-                        key={row.name}
-                        selected={isItemSelected}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            checked={isItemSelected}
-                            inputProps={{ 'aria-labelledby': labelId }}
-                          />
-                        </TableCell>
+                      <>
+                      <TableRow className="ms-5">
+                        
                         <TableCell component="th" id={labelId} scope="row" padding="none">
                           {row.name}
                         </TableCell>
                         <TableCell align="right">{row.quantity}</TableCell>
                         <TableCell align="right">{row.category}</TableCell>
-                        <TableCell align="right">{row.price}</TableCell>
+                        <TableCell align="right">{`$${row.price}`}</TableCell>
+                        
+                        <TableCell align="right">
+                          <Grid container className="justify-content-end">
+                            <Tooltip title="Edit" >
+                              <EditProduct
+                                product={row}
+                              />
+                            </Tooltip>
+                            <Tooltip title="Delete">
+                                <IconButton aria-label="delete"  onClick={() => dispatch(deleteProduct(row.id))}>
+                                  <DeleteIcon />
+                                </IconButton>
+                            </Tooltip>
+                          </Grid>
+                        </TableCell>
+
                       </TableRow>
+                      </>
                     );
                   })}
                 {emptyRows > 0 && (
@@ -317,7 +306,10 @@ function createData(name, quantity, category, price) {
           </TableContainer>
           
         </Paper>
+
+        
       </div>
+      
     );
   }
 

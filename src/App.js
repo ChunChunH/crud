@@ -1,12 +1,20 @@
 import React from "react"
 import "./styles.css"
-import EnhancedTable from './components/Table';
+import EnhancedTable from './components/Table'
+import { Provider} from 'react-redux'
+import store from "./redux/store"
 
 function App() {
+
+  
+
   return (
-    <div className="body">
-      <EnhancedTable/>
-    </div>
+    <Provider store={store}>
+      <div className="body">
+        <EnhancedTable/>
+      </div>
+    </Provider>
+    
   );
 }
 
