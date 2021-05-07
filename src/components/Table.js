@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
@@ -13,14 +13,15 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { AddProductButton } from './AddProductButton';
+import { AddProductModal } from './AddProductModal';
 import {EditProduct} from "./EditProduct"
-import { deleteProduct, initialStateStorage } from '../redux/functions';
+import { deleteProduct } from '../redux/functions';
 import { Grid } from '@material-ui/core';
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
   function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -49,8 +50,8 @@ import { Grid } from '@material-ui/core';
   }
   
   const headCells = [
-    { id: 'name', numeric: false, disablePadding: true, label: 'Product' },
-    { id: 'quantity', numeric: true, disablePadding: false, label: 'Quantity' },
+    { id: 'name', numeric: false, disablePadding: true, label: 'Product Name' },
+    { id: 'quantity', numeric: true, disablePadding: false, label: 'Quantity'},
     { id: 'category', numeric: true, disablePadding: false, label: 'Category' },
     { id: 'price', numeric: true, disablePadding: false, label: 'Unit Price' },
     { id: 'actions', numeric: true, disablePadding: false, label: 'Actions' },
@@ -67,7 +68,8 @@ import { Grid } from '@material-ui/core';
       <TableHead>
         <TableRow>
           {headCells.map((headCell) => (
-            <TableCell
+            (headCell.id != "actions") ? (
+              <TableCell
               key={headCell.id}
               align={headCell.numeric ? 'right' : 'left'}
               padding={headCell.disablePadding ? 'none' : 'default'}
@@ -76,7 +78,9 @@ import { Grid } from '@material-ui/core';
               <TableSortLabel
                 active={orderBy === headCell.id}
                 direction={orderBy === headCell.id ? order : 'asc'}
+                hideSortIcon={true}
                 onClick={createSortHandler(headCell.id)}
+                
               >
                 {headCell.label}
                 {orderBy === headCell.id ? (
@@ -86,6 +90,17 @@ import { Grid } from '@material-ui/core';
                 ) : null}
               </TableSortLabel>
             </TableCell>
+            ) : ( <TableCell
+              key={headCell.id}
+              align={headCell.numeric ? 'right' : 'left'}
+              padding={headCell.disablePadding ? 'none' : 'default'}
+              
+            >
+                          
+                {headCell.label}
+              
+            </TableCell>)
+            
           ))}
         </TableRow>
       </TableHead>
@@ -157,19 +172,26 @@ import { Grid } from '@material-ui/core';
     const [dense] = React.useState(false);
     const [rowsPerPage] = React.useState(5);
     const dispatch = useDispatch();
-
+  
     const rows = useSelector(state => state.products)
     const classes2 = useToolbarStyles()
+    const [open, setOpen] = React.useState(false);
+    const handleClickOpen = () => {
+      setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     const EnhancedTableToolbar = (props) => {
     const { numSelected } = props;
 
     const [dataStorage, setDataStorage] = useState(JSON.parse(localStorage.getItem('products')))
 
+    return (
     
-        return (
-    
-          <Toolbar
+                        <Toolbar
                           className={clsx(classes2.root, {
                             [classes2.highlight]: numSelected > 0,
                           })}
@@ -185,7 +207,12 @@ import { Grid } from '@material-ui/core';
                           )}
                     
                               <IconButton>
-                                <AddProductButton/>
+                                <button
+                                  className="btn btn-primary"
+                                  onClick={handleClickOpen}
+                                >
+                                  <FontAwesomeIcon icon={faPlus} />   Add product
+                                </button>
                               </IconButton>
                         </Toolbar>
           
@@ -237,10 +264,10 @@ import { Grid } from '@material-ui/core';
   
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
   
-    return (
+  return (
       <div className={classes.root}>
-        <Paper className={classes.paper}>
         <EnhancedTableToolbar numSelected={selected.length} />
+        <Paper className={classes.paper}>
           <TableContainer>
             <Table
               className={classes.table}
@@ -307,7 +334,11 @@ import { Grid } from '@material-ui/core';
           
         </Paper>
 
-        
+        <AddProductModal
+          open={open}
+          handleClickOpen={handleClickOpen}
+          handleClose={handleClose}
+        />
       </div>
       
     );

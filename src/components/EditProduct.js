@@ -15,10 +15,11 @@ import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import { useDispatch, useSelector } from 'react-redux';
 import { saveProductToEdit, updatedProduct } from '../redux/functions';
+import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
-        width: 550,
+        width: "100%",
     },
     selectEmpty: {
       marginTop: theme.spacing(2),
@@ -98,7 +99,19 @@ export const EditProduct = ({product}) => {
 
             <div>
             <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-            <DialogTitle id="form-dialog-title">Edit Product</DialogTitle>
+                    <div className="container">
+                        <div className="row">
+                            <DialogTitle id="form-dialog-title" className="col-11" >
+                                Edit Product
+                            </DialogTitle>
+                            <IconButton
+                                className="col-1 d-flex justify-content-end"
+                                onClick={handleClose}
+                            >
+                                <CloseIcon/>
+                            </IconButton>
+                        </div>
+                    </div>
             <DialogContent>
                 <DialogContentText>
                     Edit the data of the product
@@ -174,7 +187,11 @@ export const EditProduct = ({product}) => {
                 <Button onClick={handleClose} color="primary">
                     Cancel
                 </Button>
-                <Button onClick={() => onClickChange()} color="primary">
+                <Button
+                    onClick={() => onClickChange()} color="primary"
+                    variant="contained"
+                    color="primary"
+                >
                     Change
                 </Button>
             </DialogActions>
