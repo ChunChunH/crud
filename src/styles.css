@@ -5,3 +5,10 @@ html {
 }
 
 
+@media (max-width: 500px) {
+    html {
+      padding: 10px;
+    }
+  }
+
+
