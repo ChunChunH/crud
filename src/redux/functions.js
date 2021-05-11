@@ -54,7 +54,16 @@ export const login = (name, email, uid) => {
             name: name,
             email: email,
             uid: uid,
-            isLogged: true,
+        }
+    }
+}
+
+
+export const isLogged = () => {
+    return {
+        type: "IS_LOGGED",
+        payload: {
+            isLogged: false
         }
     }
 }

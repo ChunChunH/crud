@@ -6,7 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import {Link} from "react-router-dom"
 import {firebase} from '../../firebase'
-import { error, login } from '../../redux/functions';
+import { error, isLogged, login } from '../../redux/functions';
 import { useDispatch, useSelector } from 'react-redux';
 import Alert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -58,6 +58,7 @@ function Login() {
                 .then(async({user}) => {
                     await dispatch(login(user.displayName, user.email, user.uid))
                     setErrors({password:false , email: false})
+                    dispatch(isLogged())
                 })
                 .catch((err) => {
                     dispatch(error(err.message))

@@ -9,7 +9,7 @@ export const editProductReducer = (state = initialState, action ) => {
         case "SAVE_PRODUCT":
             return {...state, 
                     selectedProduct: action.payload
-                    }
+                }
 
             
         default:
