@@ -38,4 +38,24 @@ export const initialStateStorage = (dataStorage) => ({
     payload: dataStorage
 })
 
+
+export const error = (errorMessage) => {
+    return {
+        type: "AUTH_ERROR",
+        payload: errorMessage
+        
+    }
+}
+
+export const login = (name, email, uid) => {
+    return {
+        type: "LOGIN_USER",
+        payload: {
+            name: name,
+            email: email,
+            uid: uid,
+            isLogged: true,
+        }
+    }
+}
     

@@ -4,10 +4,12 @@ import { combineReducers } from 'redux'
 import { editProductReducer } from "../reducers/editProductReducer"
 import { loadState, saveState } from "../localStorage/localStorage"
 import { throttle } from "lodash-es"
+import { authReducer } from "../reducers/authReducer"
 
 const reducers = combineReducers({
     products: productReducer,
     edit: editProductReducer,
+    auth: authReducer
 })
 
 const persistedState = loadState()

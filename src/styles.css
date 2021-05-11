@@ -11,4 +11,12 @@ html {
     }
   }
 
+.bg {
+  background-color: #EAEAEA;
+}
+
+.card {
+  max-width: 500px;
+}
+
 
