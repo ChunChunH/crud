@@ -1,13 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export const add = (name, quantity, category, price) => ({
+export const add = (name, quantity, category, price, uid) => ({
     type: "ADD_PRODUCT",
     payload: {
         name,
         quantity,
         category,
         price,
-        id: uuidv4()
+        id: uuidv4(),
+        uid
     }
 })
 
@@ -62,9 +63,15 @@ export const login = (name, email, uid) => {
 export const isLogged = () => {
     return {
         type: "IS_LOGGED",
-        payload: {
-            isLogged: false
-        }
+        payload: true
+    }
+}
+
+
+export const logOut = () => {
+    return {
+        type:"LOG_OUT",
+        payload: false
     }
 }
     

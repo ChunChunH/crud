@@ -20,8 +20,9 @@ import { AddProductModal } from './AddProductModal';
 import {EditProduct} from "./EditProduct"
 import { deleteProduct } from '../redux/functions';
 import { Grid } from '@material-ui/core';
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Header from './Header';
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add'
 
   function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -174,6 +175,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
     const dispatch = useDispatch();
   
     const rows = useSelector(state => state.products)
+    const userLogged = useSelector(state => state.auth.userLogged)
+    console.log(userLogged)
     const classes2 = useToolbarStyles()
     const [open, setOpen] = React.useState(false);
     const handleClickOpen = () => {
@@ -190,6 +193,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
     const [dataStorage, setDataStorage] = useState(JSON.parse(localStorage.getItem('products')))
 
     return (
+          
+              
     
                         <Toolbar
                           className={clsx(classes2.root, {
@@ -207,12 +212,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
                           )}
                     
                               <IconButton>
-                                <button
-                                  className="btn btn-primary"
+                                <Button
                                   onClick={handleClickOpen}
+                                  variant="contained"
+                                  color="primary"
+                                  className="d-flex alig-items-center"
+                                  startIcon={<AddIcon />}
                                 >
-                                  <FontAwesomeIcon icon={faPlus} />   Add product
-                                </button>
+                                  Add product
+                                </Button>
                               </IconButton>
                         </Toolbar>
           
@@ -265,7 +273,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
   
   return (
-      <div className={classes.root}>
+    <>
+      <Header/>
+
+      <div className="table w-1">
         <EnhancedTableToolbar numSelected={selected.length} />
         <Paper className={classes.paper}>
           <TableContainer>
@@ -289,8 +300,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
               <TableBody>
                 {stableSort(rows, getComparator(order, orderBy))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .filter((product) => product.uid === userLogged.uid)
                   .map((row, index) => {
-                    const isItemSelected = isSelected(row.name);
+                  
                     const labelId = `enhanced-table-checkbox-${index}`;
                   
                     return (
@@ -340,6 +352,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
           handleClose={handleClose}
         />
       </div>
+      </>
       
     );
   }

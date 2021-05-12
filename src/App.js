@@ -7,13 +7,16 @@ import {BrowserRouter as Router, Switch, Route} from "react-router-dom"
 import Login from "./components/auth/Login"
 import Register from "./components/auth/Register"
 import { PrivateRoute } from "./PrivateRoute"
+import { createBrowserHistory } from 'history'
 
 
 function App() {
 
+  const history = createBrowserHistory()
+
   return (
     <Provider store={store}>
-      <Router>
+      <Router history={history}>
         <Switch>
 
           <Route exact path="/login" component={Login}/>

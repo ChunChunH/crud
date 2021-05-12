@@ -11,9 +11,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { error } from '../../redux/functions';
 import {firebase} from '../../firebase'
 import validator from "validator"
+import IconButton from '@material-ui/core/IconButton';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
 
-function Register() {
+const Register = ({history}) => {
     const [user, setUser] = useState({
         name: "",
         email:"",
@@ -40,6 +44,7 @@ function Register() {
 
     }
 
+
     const firebaseFunc = () => {
     
         if (name.trim() === ""){
@@ -47,7 +52,6 @@ function Register() {
             dispatch(error("Name is required"))
             setOpenError(true)
             setErrors({...errors, name: true})
-
 
         }else if(password !== password2){
 
@@ -80,7 +84,8 @@ function Register() {
                 password: false,
                 password2: false,
             })
-            
+            history.push('/login')
+
         }
 
     }
@@ -94,9 +99,19 @@ function Register() {
         setOpenSuccess(false);
     };
 
+    const [showPassword, setShowPassword] = useState(false)
+
+    const handleClickShowPassword = () => {
+        setShowPassword(!showPassword)
+    }
+
+    const handleMouseDownPassword = () => {
+        setShowPassword(!showPassword)
+    }
+
     return (
         <div className="d-flex justify-content-center bg">
-            <Card className="card p-4 d-flex justify-content-center align-items-center">
+            <Card className="card mt-5 p-4 d-flex justify-content-center align-items-center">
                 <CardContent>
                 <Typography variant="h5" gutterBottom className="d-flex justify-content-center"> 
                     Register
@@ -137,7 +152,7 @@ function Register() {
                     autoFocus
                     margin="dense"
                     label="Password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     fullWidth
                     className="mb-4"
                     autoComplete="off"
@@ -146,13 +161,27 @@ function Register() {
                     value={password}
                     required
                     error={errors.password}
+                    InputProps = {{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={handleClickShowPassword}
+                                onMouseDown={handleMouseDownPassword}
+                                edge="end"
+                              >
+                                {showPassword ? <Visibility /> : <VisibilityOff />}
+                              </IconButton>
+                            </InputAdornment>
+                        )
+                    }}
                 />
 
                 <TextField
                     autoFocus
                     margin="dense"
                     label="Confirm Password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     fullWidth
                     className="mb-4"
                     autoComplete="off"
@@ -173,7 +202,7 @@ function Register() {
                 </Button>
 
                     <Typography color="textSecondary" gutterBottom className="d-flex justify-content-center mt-4"> 
-                        Already have an account? <Link className="ms-1" to={"/"}>Log In</Link>
+                        Already have an account? <Link className="ms-1" to={"/login"}>Log In</Link>
                     </Typography>
                 </CardContent>
             </Card>

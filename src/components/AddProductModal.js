@@ -11,7 +11,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { add } from '../redux/functions';
 import Alert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -39,7 +39,7 @@ export const AddProductModal = ({open, handleClickOpen, handleClose}) => {
 
     const [openError, setOpenError] = useState(false);
     const [openSuccess, setOpenSuccess] = useState(false)    
-    
+    const {uid} = useSelector(state => state.auth.userLogged)
     const handleCloseAlert = (event, reason) => {
         if (reason === 'clickaway') {
         return;
@@ -76,7 +76,7 @@ export const AddProductModal = ({open, handleClickOpen, handleClose}) => {
         if(name.trim() === "" || category.trim() === "" || quantity.trim() === "" || price.trim() === ""){
             setOpenError(true);
         }else {
-            dispatch(add(name, quantity, category, price))
+            dispatch(add(name, quantity, category, price, uid))
             handleClose();
             setValue({
                 name: "",

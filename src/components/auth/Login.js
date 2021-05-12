@@ -11,8 +11,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import Alert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
 import validator from "validator"
+import IconButton from '@material-ui/core/IconButton';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
-function Login() {
+const Login = ({history}) => {
     const [user, setUser] = useState({
         email:"",
         password:"",
@@ -21,11 +25,22 @@ function Login() {
     const [openError, setOpenError] = useState(false);
     const [openSuccess, setOpenSuccess] = useState(false) 
     const authErrorMessage = useSelector(state => state.auth.error)
+    const isLoggedBoolean = useSelector(state => state.auth.isLogged)
     const dispatch = useDispatch()
     const [errors, setErrors] = useState({
         email: false,
         password: false,
     }) 
+    const [showPassword, setShowPassword] = useState(false)
+
+    const handleClickShowPassword = () => {
+        setShowPassword(!showPassword)
+    }
+
+    const handleMouseDownPassword = () => {
+        setShowPassword(!showPassword)
+    }
+
     const handleInputChange = e => {
         setUser({
             ...user,
@@ -34,23 +49,30 @@ function Login() {
     }
 
     const firebaseLogin = () => {
-        if(password.trim() === ""){
+        if(email.trim() === "" && password.trim() === ""){
 
-            dispatch(error("Password is required"))
+            dispatch(error("All fields are required"))
             setOpenError(true)
-            setErrors({...errors, password: true})
+            setErrors({email: true, password: true})
 
         }else if(email.trim() === ""){
-
+            
             dispatch(error("Email is required"))
             setOpenError(true)
             setErrors({...errors, email: true})
 
-        }else if(!validator.isEmail(email)){
-
+        }
+        else if(!validator.isEmail(email)){
+            
             dispatch(error("Email is not valid"))
             setOpenError(true)
             setErrors({...errors, email: true})
+            
+        }else if(password.trim() === ""){
+            
+            dispatch(error("Password is required"))
+            setOpenError(true)
+            setErrors({...errors, password: true})
 
         }else {
 
@@ -58,7 +80,9 @@ function Login() {
                 .then(async({user}) => {
                     await dispatch(login(user.displayName, user.email, user.uid))
                     setErrors({password:false , email: false})
-                    dispatch(isLogged())
+                    setOpenSuccess(true)
+                    await dispatch(isLogged())
+                    history.push('/')
                 })
                 .catch((err) => {
                     dispatch(error(err.message))
@@ -66,6 +90,8 @@ function Login() {
                     setErrors({password:true , email: true})
                 })
         }
+
+        console.log(isLoggedBoolean)
     }
 
     const handleCloseAlert = (event, reason) => {
@@ -79,7 +105,7 @@ function Login() {
 
     return (
         <div className="d-flex justify-content-center bg">
-            <Card className="card p-4 d-flex justify-content-center align-items-center">
+            <Card className="card p-4 mt-5 d-flex justify-content-center align-items-center">
                 <CardContent>
                 <Typography variant="h5" gutterBottom className="d-flex justify-content-center"> 
                     Log In
@@ -104,7 +130,7 @@ function Login() {
                     autoFocus
                     margin="dense"
                     label="Password"
-                    type="text"
+                    type={showPassword ? "text" : "password"}
                     fullWidth
                     className="mb-4"
                     autoComplete="off"
@@ -113,6 +139,21 @@ function Login() {
                     value={password} 
                     required
                     error={errors.password}
+                    InputProps = {{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={handleClickShowPassword}
+                                onMouseDown={handleMouseDownPassword}
+                                edge="end"
+                              >
+                                {showPassword ? <Visibility /> : <VisibilityOff />}
+                              </IconButton>
+                            </InputAdornment>
+                        )
+                    }}
+                    
                 />
 
                 <Button
@@ -132,7 +173,7 @@ function Login() {
 
             <Snackbar open={openSuccess} autoHideDuration={4000} onClose={handleCloseAlert}>
                 <Alert onClose={handleCloseAlert} severity="success">
-                    User successfully registered!
+                    User logged in successfully!
                 </Alert>
             </Snackbar>
             <Snackbar open={openError} autoHideDuration={4000} onClose={handleCloseAlert}>

@@ -1,12 +1,14 @@
+.table {
+  padding: 70px;
+  background-color: #EAEAEA;
+}
 
 html {
-    padding: 70px;
     background-color: #EAEAEA;
 }
 
-
 @media (max-width: 500px) {
-    html {
+    .table {
       padding: 10px;
     }
   }
@@ -19,4 +21,9 @@ html {
   max-width: 500px;
 }
 
+
+.header {
+  background-color: #3f51b5;
+  height: 55px;
+}
 
