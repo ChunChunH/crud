@@ -2,7 +2,7 @@ import {createStore} from "redux"
 import { productReducer } from "../reducers/productReducer"
 import { combineReducers } from 'redux'
 import { editProductReducer } from "../reducers/editProductReducer"
-import { loadState, saveState } from "../localStorage/localStorage"
+import { loadState, loadStateAuth, saveState, saveStateAuth } from "../localStorage/localStorage"
 import { throttle } from "lodash-es"
 import { authReducer } from "../reducers/authReducer"
 
@@ -14,17 +14,16 @@ const reducers = combineReducers({
 
 const persistedState = loadState()
 
+
 const store = createStore(
     reducers,
     persistedState,
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
-    
 )
 
 store.subscribe(throttle(() => {
-    saveState({
-        products: store.getState().products
-    });
+    saveState( store.getState() );
+
 }, 1000))
     
 
