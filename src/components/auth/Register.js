@@ -84,7 +84,9 @@ const Register = ({history}) => {
                 password: false,
                 password2: false,
             })
-            history.push('/login')
+            setTimeout(() => {
+                history.push('/login')
+            }, 2000)
 
         }
 

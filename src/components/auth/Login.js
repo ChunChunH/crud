@@ -82,7 +82,9 @@ const Login = ({history}) => {
                     setErrors({password:false , email: false})
                     setOpenSuccess(true)
                     await dispatch(isLogged())
-                    history.push('/')
+                    setTimeout(() => {
+                        history.push('/')
+                    }, 2000)
                 })
                 .catch((err) => {
                     dispatch(error(err.message))
