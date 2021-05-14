@@ -19,10 +19,13 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { AddProductModal } from './AddProductModal';
 import {EditProduct} from "./EditProduct"
 import { deleteProduct } from '../redux/functions';
-import { Grid } from '@material-ui/core';
+import { Grid, TextField } from '@material-ui/core';
 import Header from './Header';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add'
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+
 
   function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -49,48 +52,107 @@ import AddIcon from '@material-ui/icons/Add'
     });
     return stabilizedThis.map((el) => el[0]);
   }
-  
-  const headCells = [
-    { id: 'name', numeric: false, disablePadding: true, label: 'Product Name' },
-    { id: 'quantity', numeric: true, disablePadding: false, label: 'Quantity'},
-    { id: 'category', numeric: true, disablePadding: false, label: 'Category' },
-    { id: 'price', numeric: true, disablePadding: false, label: 'Unit Price' },
-    { id: 'actions', numeric: true, disablePadding: false, label: 'Actions' },
-  ];
-  
+
+
   function EnhancedTableHead(props) {
     const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
     const createSortHandler = (property) => (event) => {
       onRequestSort(event, property);
     };
 
+    const [filter, setFilter] = useState({
+      name:"",
+      quantity:"",
+      category:"",
+      price:""
+    })
+  
+    const {name, quantity, category, price} = filter
+
+    const headCells = [
+      { id: 'name', numeric: false, disablePadding: true, label: 'Product Name', value: name},
+      { id: 'quantity', numeric: true, disablePadding: false, label: 'Quantity', value: quantity},
+      { id: 'category', numeric: true, disablePadding: false, label: 'Category', value: category },
+      { id: 'price', numeric: true, disablePadding: false, label: 'Unit Price', value: price},
+      { id: 'actions', numeric: true, disablePadding: false, label: 'Actions' },
+    ];
+
+    const handleInputChange = (e) => {
+      setFilter({
+        ...filter,
+        [e.target.name]: e.target.value
+      })
+      console.log(filter)
+    }
   
     return (
       <TableHead>
         <TableRow>
           {headCells.map((headCell) => (
             (headCell.id != "actions") ? (
-              <TableCell
+              
+            <TableCell
               key={headCell.id}
               align={headCell.numeric ? 'right' : 'left'}
               padding={headCell.disablePadding ? 'none' : 'default'}
               sortDirection={orderBy === headCell.id ? order : false}
             >
-              <TableSortLabel
-                active={orderBy === headCell.id}
-                direction={orderBy === headCell.id ? order : 'asc'}
-                hideSortIcon={true}
-                onClick={createSortHandler(headCell.id)}
+              <div className="row">
+                {/* <TableSortLabel
+                  active={orderBy === headCell.id}
+                  direction={orderBy === headCell.id ? order : 'asc'}
+                  hideSortIcon={true}
+                  onClick={createSortHandler(headCell.id)}
+                  
+                > */}
+                  
+                  <div>{headCell.label}</div>
+                  {orderBy === headCell.id ? (
+                    <span className={classes.visuallyHidden}>
+                      {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                    </span>
+                  ) : null}
                 
-              >
-                {headCell.label}
-                {orderBy === headCell.id ? (
-                  <span className={classes.visuallyHidden}>
-                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                  </span>
-                ) : null}
-              </TableSortLabel>
+                
+                {/* </TableSortLabel> */}
+
+              </div>
+
+
+                <div className="row px-3" id={headCell.id}>
+
+                  {
+                    headCell.id === 'category'
+                    ? (
+                      <Select
+                        name={headCell.id}
+                        value={headCell.value}
+                        onChange={handleInputChange}
+                        align="right"
+                      >
+                        <MenuItem value="Food">Food</MenuItem>
+                        <MenuItem value="Candy">Candy</MenuItem>
+                        <MenuItem value="Drink">Drink</MenuItem>
+                        <MenuItem value="Snack">Snack</MenuItem>
+                      </Select>
+                    )
+                    : (
+                      <TextField
+                        autoComplete="off"
+                        type={headCell.id === 'quantity' || headCell.id === 'price' ? "number" : "text"}
+                        name={headCell.id}
+                        value={headCell.value}
+                        onChange={handleInputChange}
+                        InputProps={{ inputProps: { min: 1, max: 999999 } }}
+                      />
+                    )
+                  }
+                  
+                </div>
+
+
             </TableCell>
+          
             ) : ( <TableCell
               key={headCell.id}
               align={headCell.numeric ? 'right' : 'left'}
@@ -296,6 +358,8 @@ import AddIcon from '@material-ui/icons/Add'
                 onRequestSort={handleRequestSort}
                 rowCount={rows.length}
               />
+              
+              
 
               <TableBody>
                 {stableSort(rows, getComparator(order, orderBy))
@@ -313,6 +377,7 @@ import AddIcon from '@material-ui/icons/Add'
                           {row.name}
                         </TableCell>
                         <TableCell align="right">{row.quantity}</TableCell>
+                        
                         <TableCell align="right">{row.category}</TableCell>
                         <TableCell align="right">{`$${row.price}`}</TableCell>
                         
@@ -332,6 +397,17 @@ import AddIcon from '@material-ui/icons/Add'
                         </TableCell>
 
                       </TableRow>
+
+                      {/* <TableRow className="ms-5">
+
+                        <TableCell component="th" id={labelId} scope="row" padding="none">
+                          nombre
+                        </TableCell>
+                        <TableCell align="right">quant</TableCell>
+                        <TableCell align="right">category</TableCell>
+                        <TableCell align="right">price</TableCell>
+
+                      </TableRow> */}
                       </>
                     );
                   })}

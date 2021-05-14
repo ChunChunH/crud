@@ -138,6 +138,7 @@ export const AddProductModal = ({open, handleClickOpen, handleClose}) => {
                             onChange={handleInputChange}
                             name="quantity"
                             value={quantity}
+                            InputProps={{ inputProps: { min: 1, max: 999999 } }}
                         />
                         
                         
@@ -171,6 +172,7 @@ export const AddProductModal = ({open, handleClickOpen, handleClose}) => {
                             onChange={handleInputChange}
                             name="price"
                             value={price}
+                            InputProps={{ inputProps: { min: 1, max: 999999 } }}
                         />
 
                     </DialogContent>

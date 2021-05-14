@@ -136,13 +136,14 @@ export const EditProduct = ({product}) => {
                                 margin="dense"
                                 id="name"
                                 label="Quantity"
-                                type="text"
+                                type="number"
                                 fullWidth
                                 className="mb-4"
                                 autoComplete="off"
                                 name="quantity"
                                 value={quantity}
                                 onChange={handleInputChange}
+                                InputProps={{ inputProps: { min: 1, max: 999999 } }}
                             />
                 
                 
@@ -173,13 +174,14 @@ export const EditProduct = ({product}) => {
                     margin="dense"
                     id="name"
                     label="Price"
-                    type="text"
+                    type="number"
                     fullWidth
                     className="mb-4"
                     autoComplete="off"
                     name="price"
                     value={price}
                     onChange={handleInputChange}
+                    InputProps={{ inputProps: { min: 1, max: 999999 } }}
                 />
             
             </DialogContent>
